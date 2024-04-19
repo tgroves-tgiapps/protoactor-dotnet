@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Proto.Extensions;
 using Proto.Mailbox;
@@ -171,7 +172,7 @@ internal static class OpenTelemetryMethodsDecorators
             throw;
         }
     }
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Respond(object message,
         Action respond)
@@ -207,6 +208,12 @@ internal static class OpenTelemetryMethodsDecorators
         }
 
         var propagationContext = envelope.Header.ExtractPropagationContext();
+
+        bool hasBaggage = propagationContext.Baggage.Count > 0 || Baggage.Current.Count > 0;
+        if (hasBaggage)
+        {
+            Baggage.Current = propagationContext.Baggage;
+        }
 
         using var activity =
             OpenTelemetryHelpers.BuildStartedActivity(propagationContext.ActivityContext, source, nameof(Receive),
