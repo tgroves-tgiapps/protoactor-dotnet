@@ -52,6 +52,9 @@ public class ActorContext : IMessageInvoker, IContext, ISupervisor
         Self = self;
 
         Actor = IncarnateActor();
+        using var publishActivity = ActorSystem.ActivitySource.StartActivity($"Spawn {self} {Actor.GetType().Name}");
+        publishActivity?.AddTag(ProtoTags.ActorType, Actor.GetType().Name);
+        publishActivity?.AddTag(ProtoTags.ActionType, "Spawn");
 
         if (System.Metrics.Enabled)
         {

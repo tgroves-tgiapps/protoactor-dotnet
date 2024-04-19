@@ -33,7 +33,7 @@ internal static class OpenTelemetryMethodsDecorators
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PID SpawnNamed(string source, ActivitySetup spawnActivitySetup, Func<PID> spawn, string actorName)
+    public static PID SpawnNamed(string source, ActivitySetup spawnActivitySetup, Func<PID> spawn, string actorName,string actorType)
     {
         if (string.IsNullOrEmpty(actorName))
         {
@@ -46,6 +46,7 @@ internal static class OpenTelemetryMethodsDecorators
         try
         {
             activity?.SetTag(ProtoTags.ActionType, nameof(IContext.SpawnNamed));
+            activity?.SetTag(ProtoTags.ActorType, actorType);
             
             var pid = spawn();
             activity?.SetTag(ProtoTags.TargetPID, pid.ToString());
