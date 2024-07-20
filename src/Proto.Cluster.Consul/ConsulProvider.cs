@@ -83,6 +83,15 @@ public class ConsulProvider : IClusterProvider
         _client = new ConsulClient(clientConfiguration);
     }
 
+    public ConsulProvider(ConsulProviderConfig config, ConsultClient client)
+    {
+        _serviceTtl = config.ServiceTtl;
+        _refreshTtl = config.RefreshTtl;
+        _deregisterCritical = config.DeregisterCritical;
+        _blockingWaitTime = config.BlockingWaitTime;
+        _client = client;
+    }
+    
     public ConsulProvider(IOptions<ConsulProviderConfig> options) : this(options.Value, _ => { })
     {
     }
